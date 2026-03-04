@@ -1,0 +1,57 @@
+// UDP server
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <string.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <arpa/inet.h>
+
+int main() {
+    int i, sd, b, len, n;
+    struct sockaddr_in server, client;
+
+    server.sin_family = AF_INET;
+    server.sin_port = htons(6379);
+    server.sin_addr.s_addr = htonl(INADDR_ANY);
+
+    sd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sd > 0)
+        printf("Socket successful\n");
+    else {
+        printf("Socket not successful\n");
+        return 1;
+    }
+
+    b = bind(sd, (struct sockaddr *)&server, sizeof(server));
+    if (b >= 0)
+        printf("Bind successful\n");
+    else {
+        printf("Bind not successful\n");
+        close(sd);
+        return 1;
+    }
+
+    len = sizeof(client);
+
+    recvfrom(sd, &n, sizeof(n), 0, (struct sockaddr *)&client, &len);
+
+    int L[n], R[n];
+
+    recvfrom(sd, L, n * sizeof(int), 0, (struct sockaddr *)&client, &len);
+    recvfrom(sd, R, n * sizeof(int), 0, (struct sockaddr *)&client, &len);
+
+    int max = -1, res = -1;
+    for (i = 0; i < n; i++) {
+        if (R[i] > max) {
+            max = R[i];
+            res = L[i];
+        }
+    }
+    printf("Best Movie to watch has Length : %d",res);
+    sendto(sd, &res, sizeof(res), 0, (struct sockaddr *)&client, len);
+
+    close(sd);
+    return 0;
+}
