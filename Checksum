@@ -1,0 +1,70 @@
+#include <stdio.h>
+#include <math.h>
+int main() {
+    int choice, col, row, i, j, n;
+    int data[100] = {0};
+    int sum = 0;
+
+    printf("1. Binary\n2. Hexadecimal\n");
+    printf("Enter your choice: ");
+    scanf("%d", &choice);
+
+    if(choice == 1) {
+        int bits[100][100];
+        printf("Enter total no. of bits (rows/col): ");
+        scanf("%d%d", &row, &col);
+        n = row;
+
+        printf("Enter Binary Data:\n");
+        for(i = 0; i < row; i++) {
+            for(j = 0; j < col; j++) {
+                scanf("%d", &bits[i][j]);
+            }
+        }
+
+        for(i = 0; i < row; i++) {
+            int base = 1;
+            for(j = col - 1; j >= 0; j--) {
+                data[i] += bits[i][j] * base;
+                base *= 2;
+            }
+        }
+
+    } else if(choice == 2){
+        char hex[100];
+        printf("Enter number of data: ");
+        scanf("%d", &n);
+
+        printf("Enter Hex Data: ");
+        for(i = 0; i < n; i++) {
+            scanf(" %c", &hex[i]);
+
+
+            char values[16] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+
+            for(j = 0; j < 16; j++) {
+                if(hex[i] == values[j]) {
+                    data[i] += j ;
+                }
+            }
+        }
+    }
+    else{
+        printf("Invalid choice");
+    }
+
+    for(i = 0; i < n; i++) {
+        sum += data[i];
+
+       if(sum > 15) {
+           sum = (sum & 0xF) + 1;
+       }
+    }
+    int checksum = ~sum & 0xF;
+
+    printf("Checksum = ");
+        printf("%d", checksum);
+
+
+    return 0;
+}
