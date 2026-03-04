@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    FILE *infile, *outfile;
+    char stuffed[400], unstuffed[200];
+    int i , count = 0, j = 0;
+
+    infile = fopen("bit_stuffed.txt", "r");
+    if (infile == NULL) {
+        printf("Cannot open bit_stuffed.txt\n");
+        return 1;
+    }
+
+    fgets(stuffed, sizeof(stuffed), infile);
+    fclose(infile);
+
+    for(i =8; i < strlen(stuffed) - 8; i++) {
+        if (stuffed[i] == '1') {
+            count++;
+            unstuffed[j++] = '1';
+            if (count == 5) {
+                i++;
+                count = 0;
+            }
+        } else {
+            unstuffed[j++] = '0';
+            count = 0;
+        }
+    }
+
+    outfile = fopen("bit_unstuffed.txt", "w");
+    if (outfile == NULL) {
+        printf("Cannot open bit_unstuffed.txt\n");
+        return 1;
+    }
+
+    fprintf(outfile, "%s", unstuffed);
+    fclose(outfile);
+
+    printf("Bit Unstuffing done. Check bit_unstuffed.txt\n");
+    return 0;
+}
