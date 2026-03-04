@@ -1,0 +1,81 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    int n, parityType;
+    printf("Enter total number of bits: ");
+    scanf("%d", &n);
+
+    int i,j;
+    int padding = (8 - (n % 8)) % 8;
+    int totalBits = n + padding;
+    int rows = (totalBits / 8);
+    int cols = 8;
+    int *data = (int *)malloc(totalBits * sizeof(int));
+
+    printf("Enter the bits: ");
+    for (i = 0; i < n; i++) {
+        scanf("%d", &data[i]);
+    }
+    for (i = n; i < totalBits; i++) {
+        data[i] = 0;
+    }
+
+    printf("Enter parity type:\n1. Even parity\n2. Odd parity\nEnter your choice: ");
+    scanf("%d", &parityType);
+
+    int split[rows][cols];
+    int k = 0;
+    for (i = 0; i < rows; i++)
+        for (j = 0; j < cols; j++)
+            split[i][j] = data[k++];
+
+    int final[rows + 1][cols + 1];
+
+    for (i = 0; i < rows; i++){
+        for (j = 0; j < cols; j++){
+            final[i][j] = split[i][j];
+        }
+    }
+
+    for (i = 0; i < rows; i++) {
+        int sum = 0;
+        for (j = 0; j < cols; j++)
+            sum += final[i][j];
+
+        if ((sum % 2 == 0 && parityType == 1) || (sum % 2 == 1 && parityType == 2))
+            final[i][cols] = 0;
+        else
+            final[i][cols] = 1;
+    }
+
+    for (j = 0; j < cols; j++) {
+        int sum = 0;
+        for (i = 0; i < rows; i++)
+            sum += final[i][j];
+
+        if ((sum % 2 == 0 && parityType == 1) || (sum % 2 == 1 && parityType == 2))
+            final[rows][j] = 0;
+        else
+            final[rows][j] = 1;
+    }
+
+    int sum = 0;
+    for (j = 0; j < cols; j++)
+        sum += final[rows][j];
+
+    if ((sum % 2 == 0 && parityType == 1) || (sum % 2 == 1 && parityType == 2))
+        final[rows][cols] = 0;
+    else
+        final[rows][cols] = 1;
+
+    printf("\nData with 2D Parity:\n");
+    for (i = 0; i <= rows; i++) {
+        for (j = 0; j <= cols; j++) {
+            printf("%d ", final[i][j]);
+        }
+        printf("\n");
+    }
+
+    return 0;
+}
