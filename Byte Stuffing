@@ -1,0 +1,64 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+int main() {
+    FILE *infile, *outfile;
+    char word[100];
+    char start[10], escape[10], end[10];
+    char wordLower[100];
+    int i;
+
+    printf("Enter start delimiter : ");
+    scanf("%s", start);
+    printf("Enter escape delimiter: ");
+    scanf("%s", escape);
+    printf("Enter end delimiter : ");
+    scanf("%s", end);
+
+    int len = strlen(start);
+    for(i=0; i< len; i++){
+        start[i] = tolower(start[i]);
+    }
+    len = strlen(end);
+     for(i=0; i< len; i++){
+        end[i] = tolower(end[i]);
+    }
+    len = strlen(escape);
+     for(i=0; i< len; i++){
+        escape[i] = tolower(escape[i]);
+    }
+    infile = fopen("byteinput.txt", "r");
+    if (infile == NULL) {
+        printf("Cannot open byteinput.txt\n");
+        return 1;
+    }
+
+    outfile = fopen("byteintermediate.txt", "w");
+    if (outfile == NULL) {
+        printf("Cannot open byteintermediate.txt\n");
+        fclose(infile);
+        return 1;
+    }
+    fprintf(outfile, "%s ", start);
+
+    while (fscanf(infile, "%s", word) == 1) {
+        strcpy(wordLower, word);
+        for (i = 0; wordLower[i]; i++)
+            wordLower[i] = tolower(wordLower[i]);
+
+        if (strcmp(wordLower, start) == 0 || strcmp(wordLower, escape) == 0 || strcmp(wordLower, end) == 0) {
+            fprintf(outfile, "%s ", escape);
+        }
+
+        fprintf(outfile, "%s ", word);
+    }
+
+    fprintf(outfile, "%s", end);
+
+    fclose(infile);
+    fclose(outfile);
+
+    printf("Byte Stuffing done. Check byteintermediate.txt\n");
+    return 0;
+}
