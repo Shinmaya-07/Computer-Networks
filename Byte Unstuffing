@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    FILE *infile, *outfile;
+    char stuffed[400], unstuffed[200];
+    int i, j = 0;
+
+    infile = fopen("byteintermediate.txt", "r");
+    if (infile == NULL) {
+        printf("Cannot open byteintermediate.txt\n");
+        return 1;
+    }
+
+    fgets(stuffed, sizeof(stuffed), infile);
+    fclose(infile);
+
+    if (strncmp(stuffed, "stx", 3) != 0 || strcmp(&stuffed[strlen(stuffed) - 3], "etx") != 0) {
+        printf("? Invalid frame. Discarded (Missing STX/ETX).\n");
+        return 1;
+    }
+
+    for (i = 3; i < strlen(stuffed) - 3; i++) {
+        if (strncmp(&stuffed[i], "esc", 3) == 0) {
+            i += 3;
+        }
+        unstuffed[j++] = stuffed[i];
+    }
+
+    unstuffed[j] = '\0';
+
+    outfile = fopen("byteunstuffed.txt", "w");
+    if (outfile == NULL) {
+        printf("Cannot open byteunstuffed.txt\n");
+        return 1;
+    }
+
+    fprintf(outfile, "%s", unstuffed);
+    fclose(outfile);
+
+    printf("? Byte Unstuffing done. Check 'byteunstuffed.txt'\n");
+    return 0;
+}
